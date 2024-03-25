@@ -8,6 +8,44 @@ import numpy as np
 import xarray as xr
 
 
+def bcast(axis_data, data, axis=None):
+    """
+    Broadcast a 1-D array to an N-D array
+
+    Parameters
+    ----------
+    axis_data : array_like
+        1D array of data matching the size of one of `data` axes
+    data : array_like
+        ND array of data onto which `axis_data` will be broadcast
+    axis : int, optional
+        Axis of `data` onto which `axis_data` will be broadcast, by
+        default None, auto-detected by matching shapes
+
+    Returns
+    -------
+    axis_data : array_like
+        ND array of broadcasted axis_data
+
+    """
+    # This handles the case where axis_data is 1D and data is N-D, if more than one
+    # dimension of `data` is the same size, it will match the first dimension
+    if axis is None:
+        _dim = int(np.where(np.array(data.shape) == axis_data.shape[0])[0][0])
+    else:
+        _dim = axis
+
+    # numpy.broadcast_to only works for the last axis of an array, swap our shape
+    # around so that vertical dimension is last, broadcast vcoord to it, then swap
+    # the axes back so vcoord.shape == data.shape
+    data_shape = list(data.shape)
+    data_shape[-1], data_shape[_dim] = data_shape[_dim], data_shape[-1]
+
+    axis_data = np.broadcast_to(axis_data, data_shape)
+    axis_data = np.swapaxes(axis_data, -1, _dim)
+    return axis_data
+
+
 def gen_field(
     size: tuple, amplitude: tuple = None, length: tuple = None, pertlim: float = 0.0
 ):
@@ -35,7 +73,6 @@ def gen_field(
     naxes = len(size)
 
     axes = []
-    bcast = [None] * naxes
 
     if amplitude is None:
         amplitude = tuple([1] * naxes)
@@ -48,9 +85,8 @@ def gen_field(
 
     for _ix in range(naxes):
         axes.append(np.linspace(-1, 1, size[_ix]))
-        _bcast = list(bcast)
-        _bcast[_ix] = slice(0, None)
-        test_data += amplitude[_ix] * np.sin(axes[-1] * np.pi / length[_ix])[*_bcast]
+        _axis_data = np.sin(axes[-1] * np.pi / length[_ix])
+        test_data += amplitude[_ix] * bcast(_axis_data, test_data, axis=_ix)
 
     test_data += np.random.randn(*size) * pertlim
 
@@ -60,7 +96,7 @@ def gen_field(
 class MimicModelRun:
 
     def __init__(
-        self, name: str, variables: list[str], size: tuple = (3, 5), ninst: int = 1
+        self, name: str, variables: list, size: tuple = (3, 5), ninst: int = 1
     ):
         """
         Initalize a pseudo model run to mimic an EAM (or other) model run>
@@ -84,14 +120,17 @@ class MimicModelRun:
         self.base_data = {}
 
         for _varix, _var in enumerate(self.vars):
-            self.data[_var] = gen_field(
+            self.base_data[_var] = gen_field(
                 self.size,
                 amplitude=tuple([_varix + 1 / len(variables)] * len(self.size))
             )
 
 
     def __repr__(self):
-        return f"DATAGEN CLASS\n  TEST: {self.test}\nACCEPT: {self.accept}"
+        return (
+            f"### MIMIC CLASS ###\nNAME: {self.name}\n"
+            f"NVARS: {len(self.vars)}\nSIZE: {self.size}\nNINST: {self.ninst}"
+        )
 
     def gen_json(self):
         """Generate a JSON file to be used in the test."""
