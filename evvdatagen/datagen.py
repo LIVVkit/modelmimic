@@ -5,6 +5,7 @@ import argparse
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 
 
@@ -47,7 +48,11 @@ def bcast(axis_data, data, axis=None):
 
 
 def gen_field(
-    size: tuple, amplitude: tuple = None, length: tuple = None, pertlim: float = 0.0
+    size: tuple,
+    amplitude: tuple = None,
+    length: tuple = None,
+    pertlim: float = 0.0,
+    seed: int = None,
 ):
     """
     Generate a semi-realistic atmosphere field.
@@ -62,6 +67,8 @@ def gen_field(
         Length parameter for each axis of data, must be same length as `size`
     pertlim : float, optional
         Add a random normal perturbation on top of field, by default 0.0
+    seed : int, optional
+        If `seed` is defined, use this to set numpy's random seed
 
     Returns
     -------
@@ -69,9 +76,7 @@ def gen_field(
         `numpy.array` of sample data
 
     """
-
     naxes = len(size)
-
     axes = []
 
     if amplitude is None:
@@ -88,15 +93,53 @@ def gen_field(
         _axis_data = np.sin(axes[-1] * np.pi / length[_ix])
         test_data += amplitude[_ix] * bcast(_axis_data, test_data, axis=_ix)
 
-    test_data += np.random.randn(*size) * pertlim
+    test_data = add_pert(test_data, pertlim, seed=seed)
+    return test_data, axes
 
-    return test_data
+
+def add_pert(
+    test_data: np.array,
+    pertlim: float = 0.0,
+    popmean: float = 0.0,
+    seed: int = None,
+):
+    """
+    Add a random normal perturbation to a field of test data.
+
+    Parameters
+    ----------
+    test_data : np.array
+        Data array to which the perturbation will be added
+    pertlim : float, optional
+        Perturbation variance, by default 0.0
+    popmean : float, optional
+        Population mean, by default 0.0
+    seed : int, optional
+        If `seed` is defined, use this to set numpy's random seed, by default None
+
+    Returns
+    -------
+    test_data : np.array
+        Array with perturbation added
+
+    """
+    if seed is not None:
+        np.random.seed(seed)
+
+    pert_data = test_data + (np.random.randn(*test_data.shape) * pertlim) + popmean
+
+    return pert_data
 
 
 class MimicModelRun:
-
     def __init__(
-        self, name: str, variables: list, size: tuple = (3, 5), ninst: int = 1
+        self,
+        name: str,
+        variables: list,
+        ntimes: int = 12,
+        size: tuple = (5, 10),
+        ninst: int = 1,
+        dims: tuple = ("nlev", "ncol"),
     ):
         """
         Initalize a pseudo model run to mimic an EAM (or other) model run>
@@ -115,16 +158,22 @@ class MimicModelRun:
         """
         self.name = name
         self.vars = variables
+        self.ntimes = ntimes
         self.size = size
         self.ninst = ninst
+        self.dims = dims
+        assert len(self.dims) == len(
+            self.size
+        ), f"Number of dims ({len(self.size)}) must match dim names ({len(self.dims)})"
         self.base_data = {}
 
         for _varix, _var in enumerate(self.vars):
-            self.base_data[_var] = gen_field(
-                self.size,
-                amplitude=tuple([_varix + 1 / len(variables)] * len(self.size))
+            self.base_data[_var], axes = gen_field(
+                (self.ntimes, *self.size),
+                amplitude=tuple([_varix + 1 / len(variables)] * (len(self.size) + 1)),
             )
 
+        self.axes = axes
 
     def __repr__(self):
         return (
@@ -132,8 +181,133 @@ class MimicModelRun:
             f"NVARS: {len(self.vars)}\nSIZE: {self.size}\nNINST: {self.ninst}"
         )
 
+    def make_ensemble(
+        self, popmean: float = 0.0, pertlim: float = 1e-5, seed: bool = False
+    ):
+        """Turn base data into ensemble of data.
+
+        Parameters
+        ----------
+        seed : bool, optional
+            Seed to pass to numpy.random, will use each instance number so results will
+            be bit-for-bit, by default False
+
+        """
+        ens_data = {}
+        for iinst in range(self.ninst):
+            ens_data[iinst] = {}
+
+            if seed:
+                inst_seed = iinst + 1
+            else:
+                inst_seed = None
+
+            for _var in self.vars:
+                ens_data[iinst][_var] = add_pert(
+                    self.base_data[_var],
+                    pertlim=pertlim,
+                    popmean=popmean,
+                    seed=inst_seed,
+                )
+        self.ens_data = ens_data
+
     def gen_json(self):
         """Generate a JSON file to be used in the test."""
 
-    def write_to_nc(self):
+    def get_file_times(
+        self,
+        sim_start: str = "2000-01-01",
+        timestep: str = "month",
+    ):
+        """Get the time strings for output files
+
+        Parameters
+        ----------
+        sim_start : str, optional
+            Start of the simulated simulation, by default "2000-01-01"
+        timestep : str, optional
+            Increment of time used, either "month" or "sec". By default "month".
+
+        """
+        if timestep.lower() == "month":
+            file_times = pd.date_range(start=sim_start, periods=self.ntimes, freq="MS")
+            file_times = [_time.strftime("%Y-%m-%d") for _time in file_times]
+        elif timestep.lower() == "sec":
+            file_times = [f"{sim_start}-{istep:05d}" for istep in range(self.ntimes)]
+        else:
+            raise NotImplementedError(f"FREQ: {timestep} NOT YET IMPLEMENTED")
+        return file_times
+
+    def write_to_nc(
+        self,
+        out_path: Path = None,
+        sim_start: str = "2000-01-01",
+        timestep: str = "month",
+        hist_file_pattern: str = "eam_{inst:04d}.h0.{time}",
+    ):
         """Write generated data to a netCDF file."""
+        # Make an xarray.Dataset for each instance so it can be written to a file.
+        ens_xarray = {}
+        ds_attrs = {
+            "title": "MIMIC History file information",
+            "source": "Mimic Atmosphere Model",
+            "product": "mimic-model-output",
+            "realm": "atmos",
+            "case": self.name,
+            "Conventions": "CF-1.7",
+            "institution_id": "E3SM-Project",
+            "description": "Mimic a model run",
+        }
+        if out_path is None:
+            out_path = Path(f"./data/{self.name}")
+
+        if not out_path.exists():
+            out_path.mkdir(parents=True)
+
+        file_dims = ["time", *self.dims]
+        coords = {dim: self.axes[_ix + 1] for _ix, dim in enumerate(self.dims)}
+        coords["time"] = [0]
+        file_times = self.get_file_times(sim_start, timestep)
+        output_files = []
+
+        for iinst in self.ens_data:
+            for itime in range(self.ntimes):
+                _outfile_name = hist_file_pattern.format(
+                    inst=(iinst + 1), time=file_times[itime]
+                )
+                data_vars = {
+                    _var: (self.dims, self.ens_data[iinst][_var][itime])
+                    for _var in self.vars
+                }
+                _dset = xr.Dataset(
+                    data_vars=data_vars,
+                    coords=coords,
+                    attrs={**ds_attrs, "inst": iinst},
+                )
+                ens_xarray[iinst] = _dset
+                _out_file = Path(out_path, f"{self.name}.{_outfile_name}.nc")
+                _dset.to_netcdf(_out_file, unlimited_dims="time")
+                output_files.append(_out_file)
+        return output_files
+
+
+def main():
+    """Interpred CL args, make some data."""
+    ntimes = 12
+    size = (5, 10)
+    ninst = 30
+    cases = ["BASE", "TEST"]
+    gens = [
+        MimicModelRun(
+            _case, variables=["T", "U", "V"], ntimes=ntimes, size=size, ninst=ninst
+        )
+        for _case in cases
+    ]
+
+    for gen in gens:
+        gen.make_ensemble()
+        _ = gen.write_to_nc()
+
+
+if __name__ == "__main__":
+    main()
