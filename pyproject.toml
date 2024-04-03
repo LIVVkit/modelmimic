@@ -5,13 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "modelmimic"
 requires-python = ">=3.11"
-authors = [
-    {name="Michael Kelleher", email="kelleherme@ornl.gov"}
-]
+authors = [{ name = "Michael Kelleher", email = "kelleherme@ornl.gov" }]
 description = "Generate model-like data, _mimic_ the output of various CIME tests."
 readme = "README.md"
-license = {text = "BSD-3-Clause"}
-classifiers=[
+license = { text = "BSD-3-Clause" }
+classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: BSD License",
     "Natural Language :: English",
@@ -20,15 +18,8 @@ classifiers=[
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-dependencies = [
-    "numpy",
-    "xarray",
-    "pandas",
-]
-[project.optional-dependencies]
-dev = [
-    "ruff",
-    "isort",
-    "black",
-]
+dependencies = ["numpy", "xarray", "pandas"]
 dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = ["ruff", "isort", "black"]
