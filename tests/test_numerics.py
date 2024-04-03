@@ -1,15 +1,15 @@
 import numpy as np
 
-from evvdatagen.datagen import MimicModelRun, add_pert, bcast, gen_field
+from modelmimic.mimic import MimicModelRun, add_pert, bcast, gen_field
 
 
 def test_field_gen():
     tol = 1e-3
     arr_size = (3, 10, 12)
     data1, axes1 = gen_field(size=arr_size)
-    data2, axes2 = gen_field(size=arr_size, pertlim=1e-2)
-    data3, axes3 = gen_field(size=arr_size, pertlim=1e-2, seed=12)
-    data4, axes4 = gen_field(size=arr_size, pertlim=1e-2, seed=12)
+    data2, axes2 = gen_field(size=arr_size, popvar=1e-2)
+    data3, axes3 = gen_field(size=arr_size, popvar=1e-2, seed=12)
+    data4, axes4 = gen_field(size=arr_size, popvar=1e-2, seed=12)
 
     assert data1.shape == arr_size
     assert len(axes1) == len(arr_size)
@@ -30,13 +30,13 @@ def test_field_gen():
 
 def test_add_pert():
     data1 = np.ones((30, 40, 50))
-    data2 = add_pert(data1, pertlim=0.0, popmean=0.0, seed=5)
+    data2 = add_pert(data1, popvar=0.0, popmean=0.0, seed=5)
 
-    data3 = add_pert(data1, pertlim=1.0, popmean=3.0, seed=1)
-    data4 = add_pert(data1, pertlim=1.0, popmean=3.0, seed=1)
+    data3 = add_pert(data1, popvar=1.0, popmean=3.0, seed=1)
+    data4 = add_pert(data1, popvar=1.0, popmean=3.0, seed=1)
 
-    data5 = add_pert(data1, pertlim=2.5, popmean=-3.0)
-    data6 = add_pert(data1, pertlim=2.5, popmean=-3.0)
+    data5 = add_pert(data1, popvar=2.5, popmean=-3.0)
+    data6 = add_pert(data1, popvar=2.5, popmean=-3.0)
 
     assert (data1 == data2).all()
     assert (data3 == data4).all()
@@ -128,18 +128,18 @@ def test_file_times():
     gen.make_ensemble()
     _times = gen.get_file_times("2000-01-01", timestep="month")
     assert _times == [
-        "2000-01-01",
-        "2000-02-01",
-        "2000-03-01",
-        "2000-04-01",
-        "2000-05-01",
-        "2000-06-01",
-        "2000-07-01",
-        "2000-08-01",
-        "2000-09-01",
-        "2000-10-01",
-        "2000-11-01",
-        "2000-12-01",
+        "2000-01",
+        "2000-02",
+        "2000-03",
+        "2000-04",
+        "2000-05",
+        "2000-06",
+        "2000-07",
+        "2000-08",
+        "2000-09",
+        "2000-10",
+        "2000-11",
+        "2000-12",
     ]
 
     _times = gen.get_file_times("2000-01-01", timestep="sec")

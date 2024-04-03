@@ -1,12 +1,15 @@
-"""Generate fake data for testing EVV, mimic the output of various CIME tests.
+"""Generate model-like data for testing EVV, _mimic_ the output of various CIME tests.
 """
 
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import xarray as xr
+
+import modelmimic
 
 
 def bcast(axis_data, data, axis=None):
@@ -51,7 +54,7 @@ def gen_field(
     size: tuple,
     amplitude: tuple = None,
     length: tuple = None,
-    pertlim: float = 0.0,
+    popvar: float = 0.0,
     seed: int = None,
 ):
     """
@@ -65,7 +68,7 @@ def gen_field(
         Amplitude parameter for each axis of data, must be same length as `size`
     length : tuple
         Length parameter for each axis of data, must be same length as `size`
-    pertlim : float, optional
+    popvar : float, optional
         Add a random normal perturbation on top of field, by default 0.0
     seed : int, optional
         If `seed` is defined, use this to set numpy's random seed
@@ -93,13 +96,13 @@ def gen_field(
         _axis_data = np.sin(axes[-1] * np.pi / length[_ix])
         test_data += amplitude[_ix] * bcast(_axis_data, test_data, axis=_ix)
 
-    test_data = add_pert(test_data, pertlim, seed=seed)
+    test_data = add_pert(test_data, popvar, seed=seed)
     return test_data, axes
 
 
 def add_pert(
     test_data: np.array,
-    pertlim: float = 0.0,
+    popvar: float = 0.0,
     popmean: float = 0.0,
     seed: int = None,
 ):
@@ -110,7 +113,7 @@ def add_pert(
     ----------
     test_data : np.array
         Data array to which the perturbation will be added
-    pertlim : float, optional
+    popvar : float, optional
         Perturbation variance, by default 0.0
     popmean : float, optional
         Population mean, by default 0.0
@@ -126,7 +129,7 @@ def add_pert(
     if seed is not None:
         np.random.seed(seed)
 
-    pert_data = test_data + (np.random.randn(*test_data.shape) * pertlim) + popmean
+    pert_data = test_data + (np.random.randn(*test_data.shape) * popvar) + popmean
 
     return pert_data
 
@@ -182,7 +185,7 @@ class MimicModelRun:
         )
 
     def make_ensemble(
-        self, popmean: float = 0.0, pertlim: float = 1e-5, seed: bool = False
+        self, popmean: float = 0.0, popvar: float = 1e-5, seed: bool = False
     ):
         """Turn base data into ensemble of data.
 
@@ -205,7 +208,7 @@ class MimicModelRun:
             for _var in self.vars:
                 ens_data[iinst][_var] = add_pert(
                     self.base_data[_var],
-                    pertlim=pertlim,
+                    popvar=popvar,
                     popmean=popmean,
                     seed=inst_seed,
                 )
@@ -231,7 +234,7 @@ class MimicModelRun:
         """
         if timestep.lower() == "month":
             file_times = pd.date_range(start=sim_start, periods=self.ntimes, freq="MS")
-            file_times = [_time.strftime("%Y-%m-%d") for _time in file_times]
+            file_times = [_time.strftime("%Y-%m") for _time in file_times]
         elif timestep.lower() == "sec":
             file_times = [f"{sim_start}-{istep:05d}" for istep in range(self.ntimes)]
         else:
@@ -255,8 +258,8 @@ class MimicModelRun:
             "realm": "atmos",
             "case": self.name,
             "Conventions": "CF-1.7",
-            "institution_id": "E3SM-Project",
-            "description": "Mimic a model run",
+            "institution_id": "MODEL-MIMIC",
+            "description": "Mimic a model run: NOT A REAL EARTH SYSTEM MODEL RUN!",
         }
         if out_path is None:
             out_path = Path(f"./data/{self.name}")
@@ -264,12 +267,14 @@ class MimicModelRun:
         if not out_path.exists():
             out_path.mkdir(parents=True)
 
-        file_dims = ["time", *self.dims]
         coords = {dim: self.axes[_ix + 1] for _ix, dim in enumerate(self.dims)}
         coords["time"] = [0]
+
         file_times = self.get_file_times(sim_start, timestep)
         output_files = []
+        # file_encoding = {_var: {"zlib": True, "complevel": 3} for _var in self.vars}
 
+        # TODO: Parallelize this
         for iinst in self.ens_data:
             for itime in range(self.ntimes):
                 _outfile_name = hist_file_pattern.format(
@@ -286,28 +291,53 @@ class MimicModelRun:
                 )
                 ens_xarray[iinst] = _dset
                 _out_file = Path(out_path, f"{self.name}.{_outfile_name}.nc")
-                _dset.to_netcdf(_out_file, unlimited_dims="time")
+                _dset.to_netcdf(
+                    _out_file,
+                    unlimited_dims="time",  # encoding=file_encoding
+                )
                 output_files.append(_out_file)
         return output_files
 
 
-def main():
+def parse_args(args=None):
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="ModelMimic {}".format(modelmimic.__version__),
+        help="Show EVV's version number and exit",
+    )
+
+    args = parser.parse_args(args)
+    return args
+
+
+def main(args):
     """Interpred CL args, make some data."""
     ntimes = 12
-    size = (5, 10)
+    size = (3, 4)
     ninst = 30
+
     cases = ["BASE", "TEST"]
+    vars_file = Path("/home/ac.mkelleher/evv4esm/evv4esm/extensions/ks_vars.json")
+    with open(vars_file, "r") as _fin:
+        vars = json.loads(_fin.read())["default"][:10]
+
     gens = [
-        MimicModelRun(
-            _case, variables=["T", "U", "V"], ntimes=ntimes, size=size, ninst=ninst
-        )
+        MimicModelRun(_case, variables=vars, ntimes=ntimes, size=size, ninst=ninst)
         for _case in cases
     ]
 
-    for gen in gens:
-        gen.make_ensemble()
-        _ = gen.write_to_nc()
+    gens[0].make_ensemble(popvar=1.0)
+    _ = gens[0].write_to_nc()
+
+    gens[1].make_ensemble(popmean=1.0, popvar=1.0)
+    _ = gens[1].write_to_nc()
 
 
 if __name__ == "__main__":
-    main()
+    main(args=parse_args())

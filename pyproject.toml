@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "evvdatagen"
+name = "modelmimic"
 requires-python = ">=3.11"
 authors = [
     {name="Michael Kelleher", email="kelleherme@ornl.gov"}
 ]
-description = "Generate testing data for EVV4ESM"
+description = "Generate model-like data, _mimic_ the output of various CIME tests."
 readme = "README.md"
 license = {text = "BSD-3-Clause"}
 classifiers=[
@@ -17,12 +17,18 @@ classifiers=[
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "numpy",
-    "xarray"
+    "xarray",
+    "pandas",
+]
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "isort",
+    "black",
 ]
 dynamic = ["version"]
