@@ -1,4 +1,6 @@
+import shutil
 import numpy as np
+from pathlib import Path
 
 from modelmimic.mimic import MimicModelRun, add_pert, bcast, gen_field
 
@@ -171,3 +173,6 @@ def test_to_netcdf():
     _files = gen.write_to_nc()
     assert len(_files) == (ntimes * ninst)
     assert all([_file.exists() for _file in _files])
+    assert _files[0].parent == Path("./data/BASE")
+    if _files[0].parent == Path("./data/BASE"):
+        shutil.rmtree(_files[0].parent.parent)

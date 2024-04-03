@@ -1,0 +1,40 @@
+
+[pass_b4b]
+size = [3, 5]
+variables = ["U", "V", "T", "Q"]
+ntimes = 12
+ninst = 30
+hist_file_fmt = "eam_{inst:04d}.h0.{time}"
+[pass_b4b.baseline]
+ensemble = { seed = true }
+name = "mvk_pass_b4b_base"
+[pass_b4b.test]
+ensemble = { seed = true }
+name = "mvk_pass_b4b_test"
+
+
+[pass_nb4b]
+size = [3, 5]
+variables = ["U", "V", "T", "Q"]
+ntimes = 12
+ninst = 30
+hist_file_fmt = "eam_{inst:04d}.h0.{time}"
+[pass_nb4b.baseline]
+ensemble = { seed = false }
+name = "mvk_pass_nb4b_base"
+[pass_nb4b.test]
+ensemble = { seed = false }
+name = "mvk_pass_nb4b_test"
+
+[fail]
+size = [3, 5]
+variables = ["U", "V", "T", "Q"]
+ntimes = 12
+ninst = 30
+hist_file_fmt = "eam_{inst:04d}.h0.{time}"
+[fail.baseline]
+ensemble = { seed = false, popmean = 1.0 }
+name = "mvk_fail_base"
+[fail.test]
+ensemble = { seed = false, popmean = 2.0 }
+name = "mvk_fail_test"

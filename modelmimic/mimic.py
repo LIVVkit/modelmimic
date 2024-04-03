@@ -214,9 +214,6 @@ class MimicModelRun:
                 )
         self.ens_data = ens_data
 
-    def gen_json(self):
-        """Generate a JSON file to be used in the test."""
-
     def get_file_times(
         self,
         sim_start: str = "2000-01-01",
@@ -293,9 +290,10 @@ class MimicModelRun:
                 _out_file = Path(out_path, f"{self.name}.{_outfile_name}.nc")
                 _dset.to_netcdf(
                     _out_file,
-                    unlimited_dims="time",  # encoding=file_encoding
+                    unlimited_dims="time",
                 )
                 output_files.append(_out_file)
+
         return output_files
 
 
@@ -303,7 +301,6 @@ def parse_args(args=None):
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-
 
     parser.add_argument(
         "--version",
