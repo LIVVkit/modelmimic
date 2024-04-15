@@ -1,6 +1,7 @@
-from modelmimic.utils import read_config
-from pathlib import Path
 import os
+from pathlib import Path
+
+from modelmimic.utils import read_config
 
 
 def test_read():

@@ -1,6 +1,7 @@
 import shutil
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 
 from modelmimic.mimic import MimicModelRun, add_pert, bcast, gen_field
 
