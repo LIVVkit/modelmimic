@@ -1,0 +1,103 @@
+[pass_b4b]
+ntimes = 61
+ninst = 12
+size = [4, 6]
+variables = [
+    "T",
+    "Q",
+    "V",
+    "CLDLIQ",
+    "CLDICE",
+    "NUMLIQ",
+    "NUMICE",
+    "num_a1",
+    "num_a2",
+    "num_a3",
+]
+hist_file_fmt = "eam_{inst:04d}.h0.{time}"
+ensembles = ["ref", "baseline", "test"]
+
+[pass_b4b.ref]
+ensemble = { seed = true }
+to_nc = { out_path = "./data/pass_b4b/tsc_pass_b4b_base", file_suffix = "DT0001", timestep = "sec", step_mult = 10 }
+# Name of the ref or "truth" for tsc should be the same as the "base", just differ in the file_suffix (dtime = 1 or 2)
+name = "tsc_pass_b4b_base"
+
+[pass_b4b.baseline]
+ensemble = { seed = true }
+to_nc = { out_path = "./data/pass_b4b/tsc_pass_b4b_base", file_suffix = "DT0002", timestep = "sec", step_mult = 10 }
+name = "tsc_pass_b4b_base"
+
+[pass_b4b.test]
+ensemble = { seed = true }
+to_nc = { out_path = "./data/pass_b4b/tsc_pass_b4b_test", file_suffix = "DT0002", timestep = "sec", step_mult = 10 }
+name = "tsc_pass_b4b_test"
+
+[pass_nb4b]
+ntimes = 61
+ninst = 12
+size = [4, 6]
+variables = [
+    "T",
+    "Q",
+    "V",
+    "CLDLIQ",
+    "CLDICE",
+    "NUMLIQ",
+    "NUMICE",
+    "num_a1",
+    "num_a2",
+    "num_a3",
+]
+hist_file_fmt = "eam_{inst:04d}.h0.{time}"
+ensembles = ["ref", "baseline", "test"]
+
+[pass_nb4b.ref]
+ensemble = { seed = true, popmean = 1.00000001 }
+to_nc = { out_path = "./data/pass_nb4b/tsc_pass_nb4b_base", file_suffix = "DT0001", timestep = "sec", step_mult = 10 }
+name = "tsc_pass_nb4b_base"
+
+[pass_nb4b.baseline]
+ensemble = { seed = false, popmean = 1.0 }
+to_nc = { out_path = "./data/pass_nb4b/tsc_pass_nb4b_base", file_suffix = "DT0002", timestep = "sec", step_mult = 10 }
+name = "tsc_pass_nb4b_base"
+
+[pass_nb4b.test]
+ensemble = { seed = false, popmean = 1.0 }
+to_nc = { out_path = "./data/pass_nb4b/tsc_pass_nb4b_test", file_suffix = "DT0002", timestep = "sec", step_mult = 10 }
+name = "tsc_pass_nb4b_test"
+
+
+[fail]
+ntimes = 61
+ninst = 12
+size = [4, 6]
+variables = [
+    "T",
+    "Q",
+    "V",
+    "CLDLIQ",
+    "CLDICE",
+    "NUMLIQ",
+    "NUMICE",
+    "num_a1",
+    "num_a2",
+    "num_a3",
+]
+hist_file_fmt = "eam_{inst:04d}.h0.{time}"
+ensembles = ["ref", "baseline", "test"]
+
+[fail.ref]
+ensemble = { seed = true }
+to_nc = { out_path = "./data/fail/tsc_fail_base", file_suffix = "DT0001", timestep = "sec", step_mult = 10 }
+name = "tsc_fail_base"
+
+[fail.baseline]
+ensemble = { seed = true, popvar = 0.01, popmean = 1.0 }
+to_nc = { out_path = "./data/fail/tsc_fail_base", file_suffix = "DT0002", timestep = "sec", step_mult = 10 }
+name = "tsc_fail_base"
+
+[fail.test]
+ensemble = { seed = false, popvar = 2.0, popmean = 2.0 }
+to_nc = { out_path = "./data/fail/tsc_fail_test", file_suffix = "DT0002", timestep = "sec", step_mult = 10 }
+name = "tsc_fail_test"

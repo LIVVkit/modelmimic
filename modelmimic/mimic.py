@@ -2,7 +2,6 @@
 """
 
 import argparse
-import json
 from pathlib import Path
 
 import numpy as np
@@ -10,6 +9,7 @@ import pandas as pd
 import xarray as xr
 
 import modelmimic
+import modelmimic.utils
 
 
 def bcast(axis_data, data, axis=None):
@@ -98,6 +98,68 @@ def gen_field(
 
     test_data = add_pert(test_data, popvar, seed=seed)
     return test_data, axes
+
+
+def gen_hybrid_pres(
+    size: tuple, p_min: float = 95000, p_max: float = 103500, seed: int = None
+):
+    """
+    Approximation of hybrid level coefficients.
+
+    Parameters
+    ----------
+    size : tuple
+        Size of the output as: (number of levels, number of columns)
+    p_min : float, optional
+        Minimum surface pressure, by default 95000
+    p_max : float, optional
+        Maximum surface pressure, by default 103500
+    seed : int, optional
+        Seed for RNG, by default None
+
+    Notes
+    -----
+    These are not _actual_ hybrid pressure-sigma level coefficents. DO NOT USE for that
+    purpose, this is quick, and uncomplicated enough for the purposes of weighting used
+    in the TSC (time step convergence) test
+
+    """
+    nlev, ncol = size
+    p_0 = 100000
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    p_sfc = np.random.uniform(p_min, p_max, ncol)
+
+    _zax = np.linspace(-1, 1, nlev)
+    _mu = 0.0
+    _sig = 0.2
+    _scale = 0.2
+    hy_a = (_scale / np.sqrt(_sig * np.pi * 2)) * np.exp(
+        -0.5 * ((_zax - _mu) / _sig) ** 2
+    )
+    pres = np.cumsum(hy_a) * 1000 / 3.5
+    hy_b = (pres / 1000) - hy_a
+
+    return p_0, p_sfc, hy_a, hy_b
+
+
+def norm(data):
+    """Normalize data between [0, 1]
+
+    Parameters
+    ----------
+    data : array_like
+        Data to be normalized
+
+    Returns
+    -------
+    data_norm : array_like
+        `data` normalized between [0, 1]
+
+    """
+    return (data.max() - data) / (data.max() - data.min())
 
 
 def add_pert(
@@ -197,6 +259,13 @@ class MimicModelRun:
 
         """
         ens_data = {}
+        _area, _ = gen_field(self.size[-1:])
+        _area = norm(_area)
+
+        # 2/3 ocean, 1/3 land
+        _landfrac = np.zeros(self.size[-1])
+        _landfrac[: self.size[-1] // 3] = 1.0
+
         for iinst in range(self.ninst):
             ens_data[iinst] = {}
 
@@ -212,28 +281,44 @@ class MimicModelRun:
                     popmean=popmean,
                     seed=inst_seed,
                 )
+                p_0, p_sfc, hyai, hybi = gen_hybrid_pres(self.size, seed=inst_seed)
+                ens_data[iinst]["P0"] = p_0
+                ens_data[iinst]["PS"] = p_sfc
+                ens_data[iinst]["hyai"] = hyai
+                ens_data[iinst]["hybi"] = hybi
+                ens_data[iinst]["LANDFRAC"] = _landfrac
+                ens_data[iinst]["area"] = _area
+
         self.ens_data = ens_data
 
     def get_file_times(
         self,
-        sim_start: str = "2000-01-01",
+        sim_start: str = "0001-01-01",
         timestep: str = "month",
+        step_mult: int = 1,
     ):
         """Get the time strings for output files
 
         Parameters
         ----------
         sim_start : str, optional
-            Start of the simulated simulation, by default "2000-01-01"
+            Start of the simulated simulation, by default "0001-01-01"
         timestep : str, optional
             Increment of time used, either "month" or "sec". By default "month".
+        step_mult : int, optional
+            Multiple of increment. By default 1.
 
         """
         if timestep.lower() == "month":
-            file_times = pd.date_range(start=sim_start, periods=self.ntimes, freq="MS")
-            file_times = [_time.strftime("%Y-%m") for _time in file_times]
+            file_times = pd.date_range(
+                start=sim_start, periods=self.ntimes, freq="MS", unit="s"
+            )
+            file_times = [_time.strftime("%04Y-%m") for _time in file_times]
         elif timestep.lower() == "sec":
-            file_times = [f"{sim_start}-{istep:05d}" for istep in range(self.ntimes)]
+            file_times = [
+                f"{sim_start}-{istep:05d}"
+                for istep in range(0, step_mult * self.ntimes, step_mult)
+            ]
         else:
             raise NotImplementedError(f"FREQ: {timestep} NOT YET IMPLEMENTED")
         return file_times
@@ -241,9 +326,11 @@ class MimicModelRun:
     def write_to_nc(
         self,
         out_path: Path = None,
-        sim_start: str = "2000-01-01",
+        sim_start: str = "0001-01-01",
         timestep: str = "month",
+        step_mult: int = 1,
         hist_file_pattern: str = "eam_{inst:04d}.h0.{time}",
+        file_suffix: str = None,
     ):
         """Write generated data to a netCDF file."""
         # Make an xarray.Dataset for each instance so it can be written to a file.
@@ -267,9 +354,12 @@ class MimicModelRun:
         coords = {dim: self.axes[_ix + 1] for _ix, dim in enumerate(self.dims)}
         coords["time"] = [0]
 
-        file_times = self.get_file_times(sim_start, timestep)
+        file_times = self.get_file_times(sim_start, timestep, step_mult=step_mult)
         output_files = []
         # file_encoding = {_var: {"zlib": True, "complevel": 3} for _var in self.vars}
+        extn = "nc"
+        if file_suffix is not None:
+            extn = f"{extn}.{file_suffix}"
 
         # TODO: Parallelize this
         for iinst in self.ens_data:
@@ -277,17 +367,27 @@ class MimicModelRun:
                 _outfile_name = hist_file_pattern.format(
                     inst=(iinst + 1), time=file_times[itime]
                 )
-                data_vars = {
-                    _var: (self.dims, self.ens_data[iinst][_var][itime])
-                    for _var in self.vars
-                }
+                data_vars = {}
+                for _var in self.vars:
+                    data_vars[_var] = (self.dims, self.ens_data[iinst][_var][itime])
+                data_vars["PS"] = (self.dims[-1:], self.ens_data[iinst]["PS"])
+                data_vars["area"] = (self.dims[-1:], self.ens_data[iinst]["area"])
+                data_vars["LANDFRAC"] = (
+                    ("time", self.dims[-1]),
+                    np.expand_dims(self.ens_data[iinst]["LANDFRAC"], 0),
+                )
+
+                data_vars["hyai"] = (self.dims[:1], self.ens_data[iinst]["hyai"])
+                data_vars["hybi"] = (self.dims[:1], self.ens_data[iinst]["hybi"])
+                data_vars["P0"] = self.ens_data[iinst]["P0"]
+
                 _dset = xr.Dataset(
                     data_vars=data_vars,
                     coords=coords,
                     attrs={**ds_attrs, "inst": iinst},
                 )
                 ens_xarray[iinst] = _dset
-                _out_file = Path(out_path, f"{self.name}.{_outfile_name}.nc")
+                _out_file = Path(out_path, f"{self.name}.{_outfile_name}.{extn}")
                 _dset.to_netcdf(
                     _out_file,
                     unlimited_dims="time",
@@ -303,6 +403,12 @@ def parse_args(args=None):
     )
 
     parser.add_argument(
+        "--cfg",
+        type=Path,
+        help="Path to configuration TOML file",
+    )
+
+    parser.add_argument(
         "--version",
         action="version",
         version="ModelMimic {}".format(modelmimic.__version__),
@@ -315,25 +421,44 @@ def parse_args(args=None):
 
 def main(args):
     """Interpred CL args, make some data."""
-    ntimes = 12
-    size = (3, 4)
-    ninst = 30
 
-    cases = ["BASE", "TEST"]
-    vars_file = Path("/home/ac.mkelleher/evv4esm/evv4esm/extensions/ks_vars.json")
-    with open(vars_file, "r") as _fin:
-        vars = json.loads(_fin.read())["default"][:10]
+    # test_cfg = modelmimic.utils.read_config("./config/MVK.toml")t
+    test_cfg = modelmimic.utils.read_config(args.cfg)
 
-    gens = [
-        MimicModelRun(_case, variables=vars, ntimes=ntimes, size=size, ninst=ninst)
-        for _case in cases
-    ]
+    for _testname in test_cfg:
+        _test = test_cfg[_testname]
 
-    gens[0].make_ensemble(popvar=1.0)
-    _ = gens[0].write_to_nc()
+        gens = {}
+        for case in _test["ensembles"]:
 
-    gens[1].make_ensemble(popmean=1.0, popvar=1.0)
-    _ = gens[1].write_to_nc()
+            gens[case] = MimicModelRun(
+                _test[case]["name"],
+                size=_test["size"],
+                variables=_test["variables"],
+                ntimes=_test["ntimes"],
+                ninst=_test["ninst"],
+            )
+            gens[case].make_ensemble(**_test[case]["ensemble"])
+
+            out_path = Path("./data", _testname, gens[case].name)
+            file_suffix = None
+            step_mult = 1
+            timestep = "month"
+
+            if "to_nc" in _test[case]:
+                # If the to_nc has variables in config file, use that, otherwise use default
+                out_path = Path(_test[case]["to_nc"].get("out_path", out_path))
+                file_suffix = _test[case]["to_nc"].get("file_suffix", file_suffix)
+                timestep = _test[case]["to_nc"].get("timestep", timestep)
+                step_mult = _test[case]["to_nc"].get("step_mult", step_mult)
+
+            gens[case].write_to_nc(
+                out_path=out_path,
+                hist_file_pattern=_test["hist_file_fmt"],
+                file_suffix=file_suffix,
+                timestep=timestep,
+                step_mult=step_mult,
+            )
 
 
 if __name__ == "__main__":

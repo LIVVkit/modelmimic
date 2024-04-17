@@ -1,12 +1,14 @@
 """Utility methods for ModelMimic.
 """
+
 from pathlib import Path
 
 import toml
 
 
 def read_config(cfg_path: Path):
-    """_summary_
+    """
+    Read a TOML configuration file.
 
     Parameters
     ----------
