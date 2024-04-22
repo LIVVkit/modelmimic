@@ -19,7 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-dependencies = ["numpy", "xarray", "pandas", "toml"]
+dependencies = ["numpy", "xarray", "netCDF4", "pandas", "toml"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
