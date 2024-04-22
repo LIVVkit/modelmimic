@@ -39,19 +39,3 @@ jobs:
     - name: Test with pytest
       run: |
         pytest -vvv
-
-  pre-commit:
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && ! cancelled() }}
-    timeout-minutes: 2
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.11
-      - name: Runs pre-commit
-        run: |
-          pip install pre-commit
-          pre-commit run -a
