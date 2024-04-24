@@ -421,26 +421,30 @@ def parse_args(args=None):
 
 def main(args):
     """Interpred CL args, make some data."""
+    print(modelmimic.logo)
 
-    # test_cfg = modelmimic.utils.read_config("./config/MVK.toml")t
     test_cfg = modelmimic.utils.read_config(args.cfg)
+    print(f"CONFIG FILE: {args.cfg}")
+
+    out_dirs = {}
 
     for _testname in test_cfg:
+        print(f"    GENERATING {_testname}")
         _test = test_cfg[_testname]
 
-        gens = {}
+        out_dirs[_testname] = {}
         for case in _test["ensembles"]:
 
-            gens[case] = MimicModelRun(
+            mimic_case = MimicModelRun(
                 _test[case]["name"],
                 size=_test["size"],
                 variables=_test["variables"],
                 ntimes=_test["ntimes"],
                 ninst=_test["ninst"],
             )
-            gens[case].make_ensemble(**_test[case]["ensemble"])
+            mimic_case.make_ensemble(**_test[case]["ensemble"])
 
-            out_path = Path("./data", _testname, gens[case].name)
+            out_path = Path("./data", _testname, mimic_case.name)
             file_suffix = None
             step_mult = 1
             timestep = "month"
@@ -452,14 +456,16 @@ def main(args):
                 timestep = _test[case]["to_nc"].get("timestep", timestep)
                 step_mult = _test[case]["to_nc"].get("step_mult", step_mult)
 
-            gens[case].write_to_nc(
+            mimic_case.write_to_nc(
                 out_path=out_path,
                 hist_file_pattern=_test["hist_file_fmt"],
                 file_suffix=file_suffix,
                 timestep=timestep,
                 step_mult=step_mult,
             )
+            out_dirs[_testname][case] = out_path
 
+    return out_dirs
 
 if __name__ == "__main__":
     main(args=parse_args())
