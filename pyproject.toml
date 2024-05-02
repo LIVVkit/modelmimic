@@ -25,6 +25,9 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = ["ruff", "isort", "black"]
 
+[tool.setuptools.dynamic]
+version = { attr = "modelmimic.__version__" }
+
 [tool.pydoctor]
 project-name = "ModelMimic"
 make-html = true
