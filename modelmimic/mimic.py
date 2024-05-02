@@ -207,7 +207,7 @@ class MimicModelRun:
         dims: tuple = ("nlev", "ncol"),
     ):
         """
-        Initalize a pseudo model run to mimic an EAM (or other) model run>
+        Initalize a pseudo model run to mimic an EAM (or other) model run.
 
         Parameters
         ----------
@@ -466,6 +466,7 @@ def main(args):
             out_dirs[_testname][case] = out_path
 
     return out_dirs
+
 
 if __name__ == "__main__":
     main(args=parse_args())
