@@ -24,3 +24,13 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = ["ruff", "isort", "black"]
+
+[tool.pydoctor]
+project-name = "ModelMimic"
+make-html = true
+html-output = "./docs"
+docformat = "numpy"
+intersphinx = "https://docs.python.org/3/objects.inv"
+theme = "readthedocs"
+privacy = ["PRIVATE:**.__*__", "PUBLIC:**.__init__"]
+add-package = ["./modelmimic"]
