@@ -1,7 +1,7 @@
 [pass_b4b]
 ntimes = 61
 ninst = 12
-size = [4, 6]
+size = [3, 5]
 variables = [
     "T",
     "Q",
@@ -36,7 +36,7 @@ name = "tsc_pass_b4b_test"
 [pass_nb4b]
 ntimes = 61
 ninst = 12
-size = [4, 6]
+size = [3, 5]
 variables = [
     "T",
     "Q",
@@ -71,7 +71,7 @@ name = "tsc_pass_nb4b_test"
 [fail]
 ntimes = 61
 ninst = 12
-size = [4, 6]
+size = [3, 5]
 variables = [
     "T",
     "Q",
