@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modelmimic"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 authors = [{ name = "Michael Kelleher", email = "kelleherme@ornl.gov" }]
 description = "Generate model-like data, _mimic_ the output of various CIME tests."
 readme = "README.md"
@@ -15,6 +15,7 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -22,8 +23,12 @@ classifiers = [
 dependencies = ["numpy", "xarray", "netCDF4", "pandas", "toml"]
 dynamic = ["version"]
 
+[project.urls]
+Homepage = "https://github.com/LIVVkit/modelmimic/"
+Documentation = "https://livvkit.github.io/modelmimic/"
+
 [project.optional-dependencies]
-dev = ["ruff", "isort", "black"]
+dev = ["ruff", "isort", "black", "pytest"]
 
 [tool.setuptools.dynamic]
 version = { attr = "modelmimic.__version__" }
