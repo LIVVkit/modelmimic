@@ -161,3 +161,4 @@ cython_debug/
 
 # netCDF files
 *.nc
+*.nc.*

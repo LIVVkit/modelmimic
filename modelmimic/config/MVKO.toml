@@ -1,0 +1,70 @@
+
+[pass_b4b]
+size = [1, 5, 2]
+dims = ["time", "nCells", "nVertLevels"]
+variables = [
+    "timeClimatology_avg_activeTracers_salinity",
+    "timeClimatology_avg_activeTracers_temperature",
+    "timeClimatology_avg_ssh",
+    "timeClimatology_avg_velocityMeridional",
+    "timeClimatology_avg_velocityZonal",
+]
+ntimes = 2
+timestep = "yearly-year-month-day"
+ninst = 30
+hist_file_fmt = "mpaso_{inst:04d}.hist.am.timeSeriesStatsClimatology.{time}"
+ensembles = ["baseline", "test"]
+
+[pass_b4b.baseline]
+ensemble = { seed = true }
+name = "mvko_pass_b4b_base"
+
+[pass_b4b.test]
+ensemble = { seed = true }
+name = "mvko_pass_b4b_test"
+
+[pass_nb4b]
+size = [1, 5, 2]
+dims = ["time", "nCells", "nVertLevels"]
+variables = [
+    "timeClimatology_avg_activeTracers_salinity",
+    "timeClimatology_avg_activeTracers_temperature",
+    "timeClimatology_avg_ssh",
+    "timeClimatology_avg_velocityMeridional",
+    "timeClimatology_avg_velocityZonal",
+]
+
+ntimes = 2
+timestep = "yearly-year-month-day"
+ninst = 30
+hist_file_fmt = "mpaso_{inst:04d}.hist.am.timeSeriesStatsClimatology.{time}"
+ensembles = ["baseline", "test"]
+[pass_nb4b.baseline]
+ensemble = { seed = false }
+name = "mvko_pass_nb4b_base"
+[pass_nb4b.test]
+ensemble = { seed = false }
+name = "mvko_pass_nb4b_test"
+
+[fail]
+size = [1, 5, 2]
+dims = ["time", "nCells", "nVertLevels"]
+variables = [
+    "timeClimatology_avg_activeTracers_salinity",
+    "timeClimatology_avg_activeTracers_temperature",
+    "timeClimatology_avg_ssh",
+    "timeClimatology_avg_velocityMeridional",
+    "timeClimatology_avg_velocityZonal",
+]
+
+ntimes = 2
+timestep = "yearly-year-month-day"
+ninst = 30
+hist_file_fmt = "mpaso_{inst:04d}.hist.am.timeSeriesStatsClimatology.{time}"
+ensembles = ["baseline", "test"]
+[fail.baseline]
+ensemble = { seed = false, popmean = 1.0 }
+name = "mvko_fail_base"
+[fail.test]
+ensemble = { seed = false, popmean = 2.0 }
+name = "mvko_fail_test"

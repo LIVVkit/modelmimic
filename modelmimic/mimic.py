@@ -124,7 +124,10 @@ def gen_hybrid_pres(
     in the TSC (time step convergence) test
 
     """
-    nlev, ncol = size
+    if len(size) == 2:
+        nlev, ncol = size
+    elif len(size) == 3:
+        _, nlev, ncol = size
     p_0 = 100000
 
     if seed is not None:
@@ -262,6 +265,10 @@ class MimicModelRun:
         _area, _ = gen_field(self.size[-1:])
         _area = norm(_area)
 
+        # Last dimension of self.size should be number of columns
+        lat = np.linspace(-np.pi / 2, np.pi / 2, self.size[-1])
+        lon = np.linspace(0, 2 * np.pi, self.size[-1])
+
         # 2/3 ocean, 1/3 land
         _landfrac = np.zeros(self.size[-1])
         _landfrac[: self.size[-1] // 3] = 1.0
@@ -288,6 +295,8 @@ class MimicModelRun:
                 ens_data[iinst]["hybi"] = hybi
                 ens_data[iinst]["LANDFRAC"] = _landfrac
                 ens_data[iinst]["area"] = _area
+                ens_data[iinst]["lon"] = lon
+                ens_data[iinst]["lat"] = lat
 
         self.ens_data = ens_data
 
@@ -319,6 +328,16 @@ class MimicModelRun:
                 f"{sim_start}-{istep:05d}"
                 for istep in range(0, step_mult * self.ntimes, step_mult)
             ]
+        elif timestep.lower() == "yearly-year-month-day":
+            file_times = pd.date_range(
+                start=sim_start, periods=self.ntimes, freq="YS", unit="s"
+            )
+            file_times = [_time.strftime("%04Y-%m-%d") for _time in file_times]
+        elif timestep.lower() == "year":
+            file_times = pd.date_range(
+                start=sim_start, periods=self.ntimes, freq="YS", unit="s"
+            )
+            file_times = [_time.strftime("%04Y") for _time in file_times]
         else:
             raise NotImplementedError(f"FREQ: {timestep} NOT YET IMPLEMENTED")
         return file_times
@@ -330,7 +349,9 @@ class MimicModelRun:
         timestep: str = "month",
         step_mult: int = 1,
         hist_file_pattern: str = "eam_{inst:04d}.h0.{time}",
+        casename: bool = True,
         file_suffix: str = None,
+        **kwargs,
     ):
         """Write generated data to a netCDF file."""
         # Make an xarray.Dataset for each instance so it can be written to a file.
@@ -361,33 +382,46 @@ class MimicModelRun:
         if file_suffix is not None:
             extn = f"{extn}.{file_suffix}"
 
+        _time_suffix = kwargs.get("time_suffix", None)
+        if _time_suffix is None:
+            _time_suffix = ""
+
         # TODO: Parallelize this
         for iinst in self.ens_data:
             for itime in range(self.ntimes):
                 _outfile_name = hist_file_pattern.format(
-                    inst=(iinst + 1), time=file_times[itime]
+                    inst=(iinst + 1), time=file_times[itime], time_suffix=_time_suffix
                 )
                 data_vars = {}
                 for _var in self.vars:
                     data_vars[_var] = (self.dims, self.ens_data[iinst][_var][itime])
-                data_vars["PS"] = (self.dims[-1:], self.ens_data[iinst]["PS"])
-                data_vars["area"] = (self.dims[-1:], self.ens_data[iinst]["area"])
-                data_vars["LANDFRAC"] = (
-                    ("time", self.dims[-1]),
-                    np.expand_dims(self.ens_data[iinst]["LANDFRAC"], 0),
-                )
 
-                data_vars["hyai"] = (self.dims[:1], self.ens_data[iinst]["hyai"])
-                data_vars["hybi"] = (self.dims[:1], self.ens_data[iinst]["hybi"])
-                data_vars["P0"] = self.ens_data[iinst]["P0"]
+                # 1-D variables only x/y
+                for _var in ["PS", "area", "lon", "lat"]:
+                    data_vars[_var] = (self.dims[-1:], self.ens_data[iinst][_var])
 
-                _dset = xr.Dataset(
-                    data_vars=data_vars,
-                    coords=coords,
-                    attrs={**ds_attrs, "inst": iinst},
-                )
+                if "mvko" not in self.name:
+                    data_vars["LANDFRAC"] = (
+                        ("time", self.dims[-1]),
+                        np.expand_dims(self.ens_data[iinst]["LANDFRAC"], 0),
+                    )
+                    data_vars["hyai"] = (self.dims[:1], self.ens_data[iinst]["hyai"])
+                    data_vars["hybi"] = (self.dims[:1], self.ens_data[iinst]["hybi"])
+                    data_vars["P0"] = self.ens_data[iinst]["P0"]
+                try:
+                    _dset = xr.Dataset(
+                        data_vars=data_vars,
+                        coords=coords,
+                        attrs={**ds_attrs, "inst": iinst},
+                    )
+                except ValueError:
+                    breakpoint()
                 ens_xarray[iinst] = _dset
-                _out_file = Path(out_path, f"{self.name}.{_outfile_name}.{extn}")
+                if casename:
+                    _filename = f"{self.name}.{_outfile_name}.{extn}"
+                else:
+                    _filename = f"{_outfile_name}.{extn}"
+                _out_file = Path(out_path, _filename)
                 _dset.to_netcdf(
                     _out_file,
                     unlimited_dims="time",
@@ -441,13 +475,17 @@ def main(args):
                 variables=_test["variables"],
                 ntimes=_test["ntimes"],
                 ninst=_test["ninst"],
+                dims=_test.get("dims", ("nlev", "ncol")),
             )
             mimic_case.make_ensemble(**_test[case]["ensemble"])
 
+            # Defaults for file output
             out_path = Path("./data", _testname, mimic_case.name)
             file_suffix = None
             step_mult = 1
-            timestep = "month"
+            # Will be overridden if set in "to_nc" below
+            timestep = _test.get("timestep", "month")
+            casename = True
 
             if "to_nc" in _test[case]:
                 # If the to_nc has variables in config file, use that, otherwise use default
@@ -455,13 +493,19 @@ def main(args):
                 file_suffix = _test[case]["to_nc"].get("file_suffix", file_suffix)
                 timestep = _test[case]["to_nc"].get("timestep", timestep)
                 step_mult = _test[case]["to_nc"].get("step_mult", step_mult)
+                casename = _test[case]["to_nc"].get("casename", casename)
+                time_suffix = _test[case]["to_nc"].get("time_suffix", None)
+            else:
+                time_suffix = ""
 
             mimic_case.write_to_nc(
                 out_path=out_path,
                 hist_file_pattern=_test["hist_file_fmt"],
+                casename=casename,
                 file_suffix=file_suffix,
                 timestep=timestep,
                 step_mult=step_mult,
+                time_suffix=time_suffix,
             )
             out_dirs[_testname][case] = out_path
 
