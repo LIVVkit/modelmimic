@@ -71,7 +71,6 @@ def test_mimic_run():
 
 
 def test_bcast():
-
     # Test for auto-detect axis for:
     #   - each axis having a different size
     #   - two axes matching

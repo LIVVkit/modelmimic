@@ -1,5 +1,4 @@
-"""Generate model-like data for testing EVV, _mimic_ the output of various CIME tests.
-"""
+"""Generate model-like data for testing EVV, _mimic_ the output of various CIME tests."""
 
 import argparse
 from pathlib import Path
@@ -230,9 +229,9 @@ class MimicModelRun:
         self.size = size
         self.ninst = ninst
         self.dims = dims
-        assert len(self.dims) == len(
-            self.size
-        ), f"Number of dims ({len(self.size)}) must match dim names ({len(self.dims)})"
+        assert len(self.dims) == len(self.size), (
+            f"Number of dims ({len(self.size)}) must match dim names ({len(self.dims)})"
+        )
         self.base_data = {}
 
         for _varix, _var in enumerate(self.vars):
@@ -415,7 +414,7 @@ class MimicModelRun:
                         attrs={**ds_attrs, "inst": iinst},
                     )
                 except ValueError:
-                    breakpoint()
+                    raise
                 ens_xarray[iinst] = _dset
                 if casename:
                     _filename = f"{self.name}.{_outfile_name}.{extn}"
@@ -468,7 +467,6 @@ def main(args):
 
         out_dirs[_testname] = {}
         for case in _test["ensembles"]:
-
             mimic_case = MimicModelRun(
                 _test[case]["name"],
                 size=_test["size"],

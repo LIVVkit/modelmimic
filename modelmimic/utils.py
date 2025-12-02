@@ -1,5 +1,4 @@
-"""Utility methods for ModelMimic.
-"""
+"""Utility methods for ModelMimic."""
 
 from pathlib import Path
 
