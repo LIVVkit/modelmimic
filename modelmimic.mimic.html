@@ -7,7 +7,7 @@
   <head>
     
     <title>modelmimic.mimic</title>
-    <meta name="generator" content="pydoctor 24.11.2"> 
+    <meta name="generator" content="pydoctor 25.10.1"> 
         
     </meta>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -315,7 +315,7 @@
     
     <div class="container-fluid">
 
-      <div id="main" class="">
+      <main class="">
         
 
         
@@ -323,7 +323,7 @@
 
         <div class="page-header">
           <h1 class="module"><code><code><a href="index.html" class="internal-link">modelmimic</a></code><wbr></wbr>.<code><a href="modelmimic.mimic.html" class="internal-link" title="modelmimic.mimic">mimic</a></code></code></h1>
-          <div id="showPrivate">
+          <div id="show-private">
             <button class="btn btn-link" onclick="togglePrivate()">Toggle Private API</button>
           </div>
         </div>
@@ -333,15 +333,14 @@
         </div>
 
         <div class="extrasDocstring">
-          <a href="https://github.com/LIVVkit/modelmimic/tree/05c1b52f36798be1c1eac63151e4b91e4af13344/modelmimic/mimic.py" class="sourceLink">(source)</a>
-          <p></p>
+          <a href="https://github.com/LIVVkit/modelmimic/tree/cf5e48dfa51de33904b479ae2c46379d52911023/modelmimic/mimic.py" class="sourceLink">(source)</a>
         </div>
 
         <div class="moduleDocstring">
           <div><p>Generate model-like data for testing EVV, _mimic_ the output of various CIME tests.</p></div>
         </div>
 
-        <div id="splitTables">
+        <div id="split-tables">
           <table class="children sortable" id="id3">
   
   
@@ -349,7 +348,7 @@
     
     <td>Class</td>
     <td><code><a href="modelmimic.mimic.MimicModelRun.html" class="internal-link" title="modelmimic.mimic.MimicModelRun"><wbr></wbr>Mimic<wbr></wbr>Model<wbr></wbr>Run</a></code></td>
-    <td><span class="undocumented">No class docstring; 0/9 instance variable, 4/5 methods documented</span></td>
+    <td><span class="rst-undocumented">No class docstring; 0/9 instance variable, 4/5 methods documented</span></td>
   </tr><tr class="function">
     
     <td>Function</td>
@@ -384,7 +383,7 @@
     
     <td>Function</td>
     <td><code><a href="#parse_args" class="internal-link" title="modelmimic.mimic.parse_args">parse<wbr></wbr>_args</a></code></td>
-    <td><span class="undocumented">Undocumented</span></td>
+    <td><span class="rst-undocumented">Undocumented</span></td>
   </tr>
 </table>
           
@@ -392,7 +391,7 @@
             
         </div>
 
-        <div id="childList">
+        <div id="child-list">
           <div class="basefunction">
   
   
@@ -405,8 +404,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">add_pert</span><span class="function-signature">(test_data: <code>np.array</code>, popvar: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 0.0, popmean: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 0.0, seed: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/05c1b52f36798be1c1eac63151e4b91e4af13344/modelmimic/mimic.py#L168">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">add_pert</span><span class="function-signature long-signature">(<span class="rst-sig-param">test_data: <code>np.array</code>, </span><span class="rst-sig-param">popvar: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 0.0, </span><span class="rst-sig-param">popmean: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 0.0, </span><span class="rst-sig-param">seed: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/cf5e48dfa51de33904b479ae2c46379d52911023/modelmimic/mimic.py#L167">
       
       (source)
     </a>
@@ -418,7 +417,7 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Add a random normal perturbation to a field of test data.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">test<wbr></wbr>_data:</span><code>np.array</code></td><td class="fieldArgDesc">Data array to which the perturbation will be added</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">popvar:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, <em>optional</em></td><td class="fieldArgDesc">Perturbation variance, by default 0.0</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">popmean:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, <em>optional</em></td><td class="fieldArgDesc">Population mean, by default 0.0</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">seed:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <em>optional</em></td><td class="fieldArgDesc">If <code>seed</code> is defined, use this to set numpy's random seed, by default None</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>np.array</code></td><td class="fieldArgDesc"><strong>test_data</strong> - Array with perturbation added</td></tr></table></div>
+    <div><p>Add a random normal perturbation to a field of test data.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">test<wbr></wbr>_data:</span><code>np.array</code></td><td class="fieldArgDesc">Data array to which the perturbation will be added</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">popvar:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>, <em>optional</em></code></td><td class="fieldArgDesc">Perturbation variance, by default 0.0</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">popmean:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>, <em>optional</em></code></td><td class="fieldArgDesc">Population mean, by default 0.0</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">seed:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>, <em>optional</em></code></td><td class="fieldArgDesc">If <code>seed</code> is defined, use this to set numpy's random seed, by default None</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>np.array</code></td><td class="fieldArgDesc"><strong>test_data</strong> - Array with perturbation added</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -432,8 +431,8 @@
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">bcast</span><span class="function-signature">(axis_data, data, axis=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/05c1b52f36798be1c1eac63151e4b91e4af13344/modelmimic/mimic.py#L15">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">bcast</span><span class="function-signature">(<span class="rst-sig-param">axis_data, </span><span class="rst-sig-param">data, </span><span class="rst-sig-param">axis=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/cf5e48dfa51de33904b479ae2c46379d52911023/modelmimic/mimic.py#L14">
       
       (source)
     </a>
@@ -445,8 +444,8 @@
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Broadcast a 1-D array to an N-D array</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">axis<wbr></wbr>_data:</span><code>array_like</code></td><td class="fieldArgDesc">1D array of data matching the size of one of <code>data</code> axes</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">data:</span><code>array_like</code></td><td class="fieldArgDesc">ND array of data onto which <code>axis_data</code> will be broadcast</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">axis:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <em>optional</em></td><td class="fieldArgDesc">Axis of <code>data</code> onto which <code>axis_data</code> will be broadcast, by
-default None, auto-detected by matching shapes</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>array_like</code></td><td class="fieldArgDesc"><strong>axis_data</strong> - ND array of broadcasted axis_data</td></tr></table></div>
+    <div><p>Broadcast a 1-D array to an N-D array</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">axis<wbr></wbr>_data:</span><code>array_like</code></td><td class="fieldArgDesc">1D array of data matching the size of one of <code>data</code> axes</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">data:</span><code>array_like</code></td><td class="fieldArgDesc">ND array of data onto which <code>axis_data</code> will be broadcast</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">axis:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>, <em>optional</em></code></td><td class="fieldArgDesc">Axis of <code>data</code> onto which <code>axis_data</code> will be broadcast, by
+default None, auto-detected by matching shapes</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>array_like</code></td><td class="fieldArgDesc"><strong>axis_data</strong> - ND array of broadcasted axis_data</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -460,8 +459,8 @@ default None, auto-detected by matching shapes</td></tr><tr class="fieldStart"><
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">gen_field</span><span class="function-signature">(size: <code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code>, amplitude: <code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, length: <code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, popvar: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 0.0, seed: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/05c1b52f36798be1c1eac63151e4b91e4af13344/modelmimic/mimic.py#L53">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">gen_field</span><span class="function-signature long-signature">(<span class="rst-sig-param">size: <code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code>, </span><span class="rst-sig-param">amplitude: <code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">length: <code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>, </span><span class="rst-sig-param">popvar: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 0.0, </span><span class="rst-sig-param">seed: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/cf5e48dfa51de33904b479ae2c46379d52911023/modelmimic/mimic.py#L52">
       
       (source)
     </a>
@@ -473,7 +472,7 @@ default None, auto-detected by matching shapes</td></tr><tr class="fieldStart"><
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Generate a semi-realistic atmosphere field.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">size:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">Shape for the data</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">amplitude:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">Amplitude parameter for each axis of data, must be same length as <code><a href="modelmimic.mimic.MimicModelRun.html#size" class="internal-link" title="modelmimic.mimic.MimicModelRun.size">size</a></code></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">length:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">Length parameter for each axis of data, must be same length as <code><a href="modelmimic.mimic.MimicModelRun.html#size" class="internal-link" title="modelmimic.mimic.MimicModelRun.size">size</a></code></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">popvar:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, <em>optional</em></td><td class="fieldArgDesc">Add a random normal perturbation on top of field, by default 0.0</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">seed:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <em>optional</em></td><td class="fieldArgDesc">If <code>seed</code> is defined, use this to set numpy's random seed</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>array_like</code></td><td class="fieldArgDesc"><strong>test_data</strong> - <code>numpy.array</code> of sample data</td></tr></table></div>
+    <div><p>Generate a semi-realistic atmosphere field.</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">size:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">Shape for the data</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">amplitude:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">Amplitude parameter for each axis of data, must be same length as <code><a href="modelmimic.mimic.MimicModelRun.html#size" class="internal-link" title="modelmimic.mimic.MimicModelRun.size">size</a></code></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">length:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">Length parameter for each axis of data, must be same length as <code><a href="modelmimic.mimic.MimicModelRun.html#size" class="internal-link" title="modelmimic.mimic.MimicModelRun.size">size</a></code></td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">popvar:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>, <em>optional</em></code></td><td class="fieldArgDesc">Add a random normal perturbation on top of field, by default 0.0</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">seed:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>, <em>optional</em></code></td><td class="fieldArgDesc">If <code>seed</code> is defined, use this to set numpy's random seed</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>array_like</code></td><td class="fieldArgDesc"><strong>test_data</strong> - <code>numpy.array</code> of sample data</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -487,8 +486,8 @@ default None, auto-detected by matching shapes</td></tr><tr class="fieldStart"><
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">gen_hybrid_pres</span><span class="function-signature">(size: <code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code>, p_min: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 95000, p_max: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 103500, seed: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/05c1b52f36798be1c1eac63151e4b91e4af13344/modelmimic/mimic.py#L103">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">gen_hybrid_pres</span><span class="function-signature long-signature">(<span class="rst-sig-param">size: <code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code>, </span><span class="rst-sig-param">p_min: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 95000, </span><span class="rst-sig-param">p_max: <code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code> = 103500, </span><span class="rst-sig-param">seed: <code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code> = <a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/cf5e48dfa51de33904b479ae2c46379d52911023/modelmimic/mimic.py#L102">
       
       (source)
     </a>
@@ -507,7 +506,7 @@ default None, auto-detected by matching shapes</td></tr><tr class="fieldStart"><
 purpose, this is quick, and uncomplicated enough for the purposes of weighting used
 in the TSC (time step convergence) test</p>
 </div>
-<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">size:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">Size of the output as: (number of levels, number of columns)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">p<wbr></wbr>_min:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, <em>optional</em></td><td class="fieldArgDesc">Minimum surface pressure, by default 95000</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">p<wbr></wbr>_max:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a></code>, <em>optional</em></td><td class="fieldArgDesc">Maximum surface pressure, by default 103500</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">seed:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a></code>, <em>optional</em></td><td class="fieldArgDesc">Seed for RNG, by default None</td></tr></table></div>
+<table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">size:</span><code><a href="https://docs.python.org/3/library/stdtypes.html#tuple" class="intersphinx-link">tuple</a></code></td><td class="fieldArgDesc">Size of the output as: (number of levels, number of columns)</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">p<wbr></wbr>_min:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>, <em>optional</em></code></td><td class="fieldArgDesc">Minimum surface pressure, by default 95000</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">p<wbr></wbr>_max:</span><code><a href="https://docs.python.org/3/library/functions.html#float" class="intersphinx-link">float</a>, <em>optional</em></code></td><td class="fieldArgDesc">Maximum surface pressure, by default 103500</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">seed:</span><code><a href="https://docs.python.org/3/library/functions.html#int" class="intersphinx-link">int</a>, <em>optional</em></code></td><td class="fieldArgDesc">Seed for RNG, by default None</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -521,8 +520,8 @@ in the TSC (time step convergence) test</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">main</span><span class="function-signature">(args)</span>:
-    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/05c1b52f36798be1c1eac63151e4b91e4af13344/modelmimic/mimic.py#L456">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">main</span><span class="function-signature">(<span class="rst-sig-param">args</span>):</span>
+    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/cf5e48dfa51de33904b479ae2c46379d52911023/modelmimic/mimic.py#L455">
       
       (source)
     </a>
@@ -548,8 +547,8 @@ in the TSC (time step convergence) test</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">norm</span><span class="function-signature">(data)</span>:
-    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/05c1b52f36798be1c1eac63151e4b91e4af13344/modelmimic/mimic.py#L151">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">norm</span><span class="function-signature">(<span class="rst-sig-param">data</span>):</span>
+    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/cf5e48dfa51de33904b479ae2c46379d52911023/modelmimic/mimic.py#L150">
       
       (source)
     </a>
@@ -561,7 +560,7 @@ in the TSC (time step convergence) test</p>
   </div>
   <div class="docstring functionBody">
     
-    <div><p>Normalize data between [0, 1]</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">data:</span><code>array_like</code></td><td class="fieldArgDesc">Data to be normalized</td></tr><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>array_like</code></td><td class="fieldArgDesc"><strong>data_norm</strong> - <code>data</code> normalized between [0, 1]</td></tr></table></div>
+    <div><p>Normalize data between [0, 1]</p><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Parameters</td></tr><tr><td class="fieldArgContainer"><span class="fieldArg">data:</span><code>array_like</code></td><td class="fieldArgDesc">Data to be normalized</td></tr></table><table class="fieldTable"><tr class="fieldStart"><td class="fieldName" colspan="2">Returns</td></tr><tr><td class="fieldArgContainer"><code>array_like</code></td><td class="fieldArgDesc"><strong>data_norm</strong> - <code>data</code> normalized between [0, 1]</td></tr></table></div>
   </div>
 </div><div class="basefunction">
   
@@ -575,8 +574,8 @@ in the TSC (time step convergence) test</p>
   <div class="functionHeader">
     
     
-    <span class="py-keyword">def</span> <span class="py-defname">parse_args</span><span class="function-signature">(args=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a>)</span>:
-    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/05c1b52f36798be1c1eac63151e4b91e4af13344/modelmimic/mimic.py#L434">
+    <span class="py-keyword">def</span>&#160;<span class="py-defname">parse_args</span><span class="function-signature">(<span class="rst-sig-param">args=<a href="https://docs.python.org/3/library/constants.html#None" class="intersphinx-link">None</a></span>):</span>
+    <a class="sourceLink" href="https://github.com/LIVVkit/modelmimic/tree/cf5e48dfa51de33904b479ae2c46379d52911023/modelmimic/mimic.py#L433">
       
       (source)
     </a>
@@ -593,7 +592,7 @@ in the TSC (time step convergence) test</p>
 </div>
         </div>
       
-      </div>
+      </main>
     </div>
 
     <footer class="navbar navbar-default">
@@ -603,7 +602,7 @@ in the TSC (time step convergence) test</p>
     <div class="container-fluid">
       <a href="index.html">API Documentation</a> for <a href="https://github.com/LIVVkit/modelmimic" class="projecthome">ModelMimic</a>,
     generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a>
-      24.11.2 at 2025-03-05 14:41:36.
+      25.10.1 at 2025-12-02 22:01:47.
     </div>
     
     <script src="ajax.js" type="text/javascript"></script>
